@@ -22,8 +22,8 @@ Lambda_pos = (Lambda + abs(Lambda))*0.5;
 Lambda_neg = (Lambda - abs(Lambda))*0.5;
 A_pos = S*Lambda_pos/S;
 A_neg = S*Lambda_neg/S;
-% tau_l = [-1; 1]; % Penalty parameter
-% tau_r = [-1; -1];
+tau_l = [-1; 1]; % Penalty parameter
+tau_r = [-1; -1];
 e_1u = [1 0]; % Choose variable
 e_ku = [0 1];
 
@@ -32,15 +32,15 @@ ordning = 6;
 Val_operator_ANM;
 
 % SBP = -SAT approximation for Dirichlet
-% PP = kron(A, D1) + kron(tau_l, HI)*e_1*kron(e_1u, e_1') + ...
-%     kron(tau_r, HI)*e_m*kron(e_1u, e_m');
-% P = dt*sparse(PP);
+PP = kron(A, D1) + kron(tau_l, HI)*e_1*kron(e_1u, e_1') + ...
+    kron(tau_r, HI)*e_m*kron(e_1u, e_m');
+P = dt*sparse(PP);
 % G_l = dt*sparse(-kron(tau_l, HI*e_1));    % Penalty data
 % G_r = dt*sparse(-kron(tau_r, HI*e_m));
 
 % SBP = -SAT approximation for characteristic
-PP = kron(A, D1) + kron(A_neg, HI*e_1*e_1') - kron(A_pos, HI*e_m*e_m');
-P = dt*sparse(PP);
+% PP = kron(A, D1) + kron(A_neg, HI*e_1*e_1') - kron(A_pos, HI*e_m*e_m');
+% P = dt*sparse(PP);
 
 % Setup exact solution
 rr = 0.1;          % Width of Gaussian
@@ -98,6 +98,15 @@ for k = 1:N_iter
     err_2(k) = sqrt(h)*norm(V(m+1:end) - exact(m+1:end));
 end
 close(vidObj)
+
+% Check convergence
+conv = log10(err_1./err_2);
+
+% Plot convergence
+figure()
+plot(1:N_iter, conv)
+xlabel('Iterations')
+ylabel('Deviation from analytical solution')
 
 % Plot eigenvalues
 figure()
