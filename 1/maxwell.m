@@ -109,25 +109,23 @@ for iOrder = 1:length(order)
             %         end
             
             % Calculate error
-            %         err(k, j) = sqrt(h)*norm(V - exact);
+            if k == floor(0.8*N_iter)
+                err(iOrder, j) = sqrt(h)*norm(V - exact);
+            end
         end
         %     close(vidObj)
-        err(j) = sqrt(h)*norm(V - exact);
-        
-        if j > 1
-            q(iOrder, j-1) = log10(err(j)/err(j-1))/log10(grid_ref(j)/grid_ref(j-1));
-        end
     end
     
     % Check convergence
-    % conv = log10(err(:, 2)./err(:, 1))/log10(grid_ref(2)/grid_ref(1));
+    q(iOrder, 1) = log10(err(iOrder, 1)/err(iOrder, end))...
+        /log10(grid_ref(1)/grid_ref(end));
 end
 
-% % Plot convergence
-% figure()
-% plot(1:N_iter, conv)
-% xlabel('Iterations')
-% ylabel('q')
+% Plot convergence
+figure()
+plot(order, q, '-*')
+xlabel('Iterations')
+ylabel('q')
 
 % Plot eigenvalues
 figure()
