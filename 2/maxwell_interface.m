@@ -2,7 +2,7 @@ clear all; close all;
 
 % Choose order and set grid refine_muents
 % grid_ref = [1 2 3 4];
-grid_ref = 4;
+grid_ref = 8;
 
 % Repeat for different orders of SBP
 % order = [2 4 6 10];
@@ -10,7 +10,7 @@ ordning = 4;
 
 % Setup time
 t_start = 0;
-t_end = 1.8*2;
+t_end = 1.8;
 
 % Setup space
 x_l = -1;
@@ -27,12 +27,14 @@ Lambda_neg = (Lambda - abs(Lambda))*0.5;
 A_pos = S*Lambda_pos/S;
 A_neg = S*Lambda_neg/S;
 
-eta_l = 2; % Refraction
-eta_r = 1;
+epsilon_l = 2;
+epsilon_r = 1;
+eta_l = sqrt(epsilon_l); % Refraction
+eta_r = sqrt(epsilon_r);
 T_exact = 2*eta_l./(eta_l + eta_r); % Transmission
 R_exact = (eta_l - eta_r)./(eta_l + eta_r); % Reflection
-C_l = [eta_l 0; 0 1];
-C_r = [eta_r 0; 0 1];
+C_l = [epsilon_l 0; 0 1];
+C_r = [epsilon_r 0; 0 1];
 C_lI = inv(C_l);
 C_rI = inv(C_r);
 
@@ -46,8 +48,8 @@ e_ku = [0 1];
 % Setup exact solution
 rr = 0.1;          % Width of Gaussian
 
-% Repeat for two grid refine_muents to check convergence
-for j = 1:length(grid_ref) % Grid refine_muents for convergence
+% Repeat for two grid refinements to check convergence
+for j = 1:length(grid_ref) % Grid refinements for convergence
     
     % Start from 0
     t = t_start;
@@ -59,7 +61,8 @@ for j = 1:length(grid_ref) % Grid refine_muents for convergence
     x_R = linspace(0, x_r, m);
     h = L/(2*m-1);
     dt = 0.1*h;
-    N_iter = floor(t_end/dt);
+%     N_iter = floor(t_end/dt);
+    N_iter = round(((0.5*eta_l)/dt) + (0.5*eta_r)/dt); % N_iter s.t. waves stop at 0.5
     
     % Load operators
     Val_operator_ANM;
@@ -132,13 +135,13 @@ for j = 1:length(grid_ref) % Grid refine_muents for convergence
         end
         
         % Plot
-        if (mod(k, update_movie) == 0)
-            plot(x_L, V_l(1:m), 'b', x_L, V_l(m+1:end), 'r', ...
-                x_R, V_r(1:m), 'b', x_R, V_r(m+1:end), 'r')
-            ylim([-2 2])
-            currFrame = getframe;
-            writeVideo(vidObj, currFrame);
-        end
+%         if (mod(k, update_movie) == 0)
+%             plot(x_L, V_l(1:m), 'b', x_L, V_l(m+1:end), 'r', ...
+%                 x_R, V_r(1:m), 'b', x_R, V_r(m+1:end), 'r')
+%             ylim([-2 2])
+%             currFrame = getframe;
+%             writeVideo(vidObj, currFrame);
+%         end
     end
     close(vidObj)
 end
@@ -156,6 +159,16 @@ fel = abs(T - T_exact);
 fel2 = abs(R - R_exact);
 (fel+fel2)/2
 
+% Calculate transmissions
+E_I = 1; % Incident wave
+E_tx = abs(min(V_r(1:m))); % Transmitted wave
+E_rx = abs(min(V_l(1:m)));
+T = E_tx/E_I
+R = E_rx/E_I
+
+err_T = abs(T - T_exact);
+err_R = abs(R - R_exact);
+err = 0.5*(err_T + err_R)
 
 % Help functions
 function theta = theta_1(x, x0, t, rr)

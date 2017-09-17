@@ -1,7 +1,7 @@
 clear all; close all;
 
 % Choose order and set grid refinements
-grid_ref = [1 2 3 4];
+grid_ref = [1 4];
 
 % Repeat for different orders of SBP
 order = [2 4 6 10];
@@ -124,14 +124,14 @@ end
 % Plot convergence
 figure()
 plot(order, q, '-*')
-xlabel('Iterations')
+xlabel('Order of SBP-operator')
 ylabel('q')
 
 % Plot eigenvalues
-figure()
-plot(real(eig(PP)), imag(eig(PP)), '*')
-xlabel('Real axis')
-ylabel('Imaginary axis')
+% figure()
+% plot(real(eig(PP)), imag(eig(PP)), '*')
+% xlabel('Real axis')
+% ylabel('Imaginary axis')
 
 % Help functions
 function theta = theta_1(x, t, rr)
