@@ -127,13 +127,7 @@ for j = 1:length(grid_ref) % Grid refinements for convergence
         V_r = V_r + (w1_r + 2*w2_r + 2*w3_r + w4_r)/6;
         
         t = t + dt;
-        
-        if(abs(t - 0.35) <= 0.9*dt)
-            mL1 = round(0.72/h);
-            mL2 = round(0.76/h);
-            Emax = abs(min(V_l(mL1:mL2)));
-        end
-        
+
         % Plot
 %         if (mod(k, update_movie) == 0)
 %             plot(x_L, V_l(1:m), 'b', x_L, V_l(m+1:end), 'r', ...
@@ -145,19 +139,6 @@ for j = 1:length(grid_ref) % Grid refinements for convergence
     end
     close(vidObj)
 end
-
-mL1 = ceil(0.76/h);
-mL2 = ceil(0.82/h);
-mR1 = ceil(0.36/h);
-mR2 = ceil(0.45/h);
-ELmax = abs(min(V_l(mL1:mL2)));
-ERmax = abs(min(V_r(mR1:mR2)));
-
-T = ERmax/Emax;
-R = ELmax/Emax;
-fel = abs(T - T_exact);
-fel2 = abs(R - R_exact);
-(fel+fel2)/2
 
 % Calculate transmissions
 E_I = 1; % Incident wave

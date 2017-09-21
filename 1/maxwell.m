@@ -1,10 +1,10 @@
 clear all; close all;
 
 % Choose order and set grid refinements
-grid_ref = [1 4];
+grid_ref = [1];
 
 % Repeat for different orders of SBP
-order = [2 4 6 10];
+order = [4];
 for iOrder = 1:length(order)
     ordning = order(iOrder);
     
