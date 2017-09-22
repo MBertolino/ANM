@@ -2,8 +2,8 @@ clear all; close all;
 
 % Choose order of SBP
 ordning = 4;
-% grid = 10:10:60 + 1;
-grid = 31;
+grid = 11:10:61;
+% grid = 51;
 
 % Setup time
 t_start = 0;
@@ -20,7 +20,7 @@ y_t = 1;
 y0 = 0;
 L_y = y_t - y_b;
 
-for j = 1:length(grid) % Grid refinements for convergence
+for j = 1:length(grid)
     % Setup grid
     m = grid(j);
     x = linspace(x_l, x_r, m); % Discrete x-values
@@ -99,24 +99,24 @@ for j = 1:length(grid) % Grid refinements for convergence
         t = t + dt;
         
         % Plot
-        surf(x, y, Vmat_2)
-        xlim([-1 1])
-        ylim([-1 1])
-        zlim([-1 1])
-        pause(0.001)
+%         surf(x, y, Vmat_1)
+%         xlim([-1 1])
+%         ylim([-1 1])
+%         zlim([-1 1])
+%         pause(0.001)
         
         % Measure divergence
         if k == floor(0.6*N_iter)
             E_x = V(1:m*m);
             E_y = V(2*m*m+1:3*m*m);
-            Theta = E_x + E_y;
+            Theta = D_x*E_x + D_y*E_y;
             divergence(j) = sqrt(Theta'*H_norm*Theta);
         end
     end
     
     % Check convergence
     q(j) = log10(divergence(1)/divergence(j))...
-        /log10(grid(1)/grid(j));
+        /log10(grid(j)/grid(1));
     disp(j)
 end
 
@@ -126,8 +126,8 @@ function theta = theta_init(x, x0, y, y0, rr)
 m = length(x);
 n = length(y);
 theta = zeros(m*n, 1);
-for (ix = 0:(m-1))
-    for (iy = 1:n)
+for ix = 0:(m-1)
+    for iy = 1:n
         theta(ix*m + iy, 1) = exp(-((x(ix+1) - x0)/rr).^2 - ((y(iy) - y0)/rr).^2)';
     end
 end
